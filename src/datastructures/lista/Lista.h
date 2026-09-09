@@ -22,6 +22,6 @@ void insertarFinal(Lista *lista,void *dato);
 void eliminarDato(Lista *lista,void *dato,fn_comparar comparar);
 int buscarDato(Lista lista,void *dato,fn_comparar comparar);
 void ordenarLista(Lista *lista,fn_comparar comparar,Orden orden);
-void registraOrdenado(Lista *lista, void *dato);
+
 
 #endif

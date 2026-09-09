@@ -5,9 +5,6 @@ Lista inicializarLista(void)
 	return (Lista){.inicio=NULL,.fin=NULL,.cant=0,.orden=NINGUNO};
 }
 
-
-
-
 void imprimirLista(Lista lista,fn_imprimir imprimir)
 {
 	Nodo *aux;
@@ -109,48 +106,5 @@ void ordenarLista(Lista *lista,fn_comparar comparar,Orden orden)
 		}
 		if(cmp!=i)
 			swapNodo(i,cmp);
-	}
-}
-
-void registraOrdenado(Lista *lista, void *dato)
-{
-	if (lista->orden == NINGUNO) //si no hay orden en la lista se queda
-	{
-		insertarFinal(lista, dato);
-		return;
-	}
-
-	Nodo *nuevo = crearNodo(dato);
-	lista->cant++;
-	if (!lista->inicio) 
-	{
-		lista->inicio = lista->fin = nuevo;
-		return;
-	}
-
-	if ((lista->orden == ASCENDENTE && lista->comparar(dato, lista->inicio->dato) <= 0) || 
-		(lista->orden == DESCENDENTE && lista->comparar(dato, lista->inicio->dato) >= 0)) 
-	{
-		nuevo->sig = lista->inicio;//Asigna el dato 
-		lista->inicio = nuevo;
-		return;
-	}
-
-	Nodo *actual = lista->inicio;
-	while (actual->sig != NULL) //recorrer el nodo actual
-	{
-		if ((lista->orden == ASCENDENTE && lista->comparar(dato, actual->sig->dato) <= 0) || 
-		(lista->orden == DESCENDENTE && lista->comparar(dato, actual->sig->dato) >= 0)) 
-		{
-			break; 
-		} 
-		actual = actual->sig;
-	}
-
-	nuevo->sig = actual->sig;//el nuevo se convieerte en actual
-	actual->sig = nuevo;//sig a nuevo
-	if (nuevo->sig == NULL) 
-	{
-		lista->fin = nuevo;//asigna el ultimo valor a nuevo
 	}
 }
