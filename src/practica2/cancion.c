@@ -16,7 +16,8 @@ Canciones cargarCanciones(void)
 		(Cancion){"Tu Falta de Querer","Mon Laferte",2014},
 		(Cancion){"Amarte duele","Natalia Lafourcade",2002},
 		(Cancion){"Azul","Zoe",2018},
-		(Cancion){"Entre canibsles","Soda Stereo",1990},
+		(Cancion){"Entre canibales","Soda Stereo",1990},
+		(Cancion){"Sunny","Boney M",1977},
 
 	};
 
