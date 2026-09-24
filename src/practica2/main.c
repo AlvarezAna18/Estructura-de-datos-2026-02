@@ -15,6 +15,7 @@ int main(void)
 	
 	while(corre_programa)
 	{
+		imprimirReproductor(actual, lista, bucle);
 		//imprimirReproductor(actual, lista, bucle);
 		printf("\n\r Crea tu playlist ----------------------------------------------------------------");
 		printf("\n\r");
@@ -44,14 +45,11 @@ int main(void)
 				
 			case 1:
 				anterior(lista, &actual, bucle);
-						imprimirReproductor(actual, lista, bucle);
 
 				break;
 
 			case 2:
 				siguiente(lista, &actual, bucle);
-						imprimirReproductor(actual, lista, bucle);
-
 				break;
 				
 			case 3:
