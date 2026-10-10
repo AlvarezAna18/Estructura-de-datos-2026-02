@@ -28,3 +28,18 @@ void swapNodod(Nodod *a,Nodod *b)
 	a->dato = b->dato;
 	b->dato = aux;	
 }
+
+
+
+Nodoa* crearNodoa(void *dato)
+{
+	Nodoa *nuevo = calloc(1,sizeof(Nodoa));
+	nuevo->dato = dato;
+	return nuevo;	
+}
+void swapNodoa(Nodoa *a,Nodoa *b)
+{
+	void *aux = a->dato;
+	a->dato = b->dato;
+	b->dato = aux;		
+}

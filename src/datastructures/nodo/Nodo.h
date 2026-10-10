@@ -28,9 +28,18 @@ typedef struct nodod
 	struct nodod *ant;
 }Nodod;
 
+typedef struct nodoa
+{
+	void *dato;
+	struct nodoa *izq;
+	struct nodoa *dch;
+}Nodoa;
+
 
 Nodo* crearNodo(void *dato);
 void swapNodo(Nodo*,Nodo*);
 Nodod* crearNodod(void *dato);
 void swapNodod(Nodod*,Nodod*);
+Nodoa* crearNodoa(void *dato);
+void swapNodoa(Nodoa*,Nodoa*);
 #endif
