@@ -10,9 +10,9 @@ build :
 run:
 	$(output)
 rebuild:
-	make -C ..\iostring
-	make -C ..\datastructures\nodo
-	make -C ..\datastructures\lista
-	make -C ..\datastructures\arbol
+	$(MAKE) -C ../iostring
+	$(MAKE) -C ../datastructures/nodo
+	$(MAKE) -C ../datastructures/lista
+	$(MAKE) -C ../datastructures/arbol
 	gcc $(cflags) $(source) -o $(output) $(includes) -L $(libs)
 	@echo "Compilo Exitosamente!!!"
