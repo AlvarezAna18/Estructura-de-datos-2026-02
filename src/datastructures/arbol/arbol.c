@@ -222,3 +222,110 @@ void imprimirOrden(Arbol arbol,fn_imprimir imprimir,int opcion)
 			break;
 	}
 }
+
+
+
+
+void imprimir_arbol(Nodoa* nodo, int nivel,fn_imprimir imprimir)
+{
+    int i;
+    if (nodo != NULL)
+        {
+        printf(" ");
+		imprimir(nodo->dato);
+        if(nodo->dch)
+        {
+            printf("\n");
+            for (i = 0; i < nivel+1; i++)
+            {
+                if(i==nivel)
+                    printf(" |____R ");
+                else
+                    printf(" |      ");
+            }
+            imprimir_arbol(nodo->dch, nivel + 1,imprimir);
+        }
+        if(nodo->izq)
+        {
+            printf("\n");
+            for (i = 0; i < nivel+1; i++)
+            {
+                printf(" |      ");
+                //printf(" |      ");
+            }
+            printf("\n");
+            for (i = 0; i < nivel+1; i++)
+            {
+                if(i==nivel)
+                    printf(" |____L ");
+                else
+                    printf(" |      ");
+            }
+            imprimir_arbol(nodo->izq, nivel + 1,imprimir);
+        }
+    }
+}
+
+void imprimirArbol(Arbol arbol,fn_imprimir imprimir)
+{
+	imprimir_arbol(arbol.raiz,0,imprimir);
+}
+
+
+//al insertar despued de eliminar arbol no se acomoda en orden
+void insertarArbolO(Arbol *arbol, void *dato)
+{
+    if (arbol == NULL || dato == NULL || arbol->comparar == NULL)
+        return;
+
+    // Si el árbol está vacío, el nuevo nodo es la raíz
+    if (arbol->raiz == NULL)
+    {
+        arbol->raiz = crearNodoa(dato);
+        arbol->cant++;
+        return;
+    }
+
+    Nodoa *actual = arbol->raiz;
+    Nodoa *padre = NULL;
+	int comparacion = 0;
+
+    // Recorrer para encontrar la posición correcta
+    while (actual != NULL)
+    {
+        padre = actual;
+        comparacion = arbol->comparar(dato, actual->dato);
+
+        if (comparacion == 0)
+            return;
+			int irIzquierda = (arbol->orden == ASC) ? (comparacion < 0) : (comparacion > 0);
+
+			if (irIzquierda)
+				actual = actual->izq;
+			else
+				actual = actual->dch;
+		}
+
+		Nodoa *nuevo = crearNodoa(dato);
+		if (nuevo == NULL)
+			return;
+
+		// Recalculamos la dirección respecto al padre final encontrado
+		comparacion = arbol->comparar(dato, padre->dato);
+		int conectarIzquierda = (arbol->orden == ASC) ? (comparacion < 0) : (comparacion > 0);
+
+		if (conectarIzquierda)
+			padre->izq = nuevo;
+		else
+			padre->dch = nuevo;
+
+		arbol->cant++;
+}
+
+int comparar(void *a, void *b) 
+{
+    int valA = *(int *)a;
+    int valB = *(int *)b;
+    return valA - valB;
+}
+	

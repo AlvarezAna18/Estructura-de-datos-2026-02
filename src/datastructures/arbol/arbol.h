@@ -14,16 +14,23 @@
 #define IZQUIERDA 0
 #define DERECHA 1
 
-typedef struct
+#define ASC 1
+#define DEC 0
+
+typedef struct Arbol 
 {
-	Nodoa *raiz;
-	size_t cant;	
-	fn_comparar comparar;//agregar para comparar
-}Arbol;
+    Nodoa *raiz;
+    size_t cant;
+    fn_comparar comparar;
+    int orden; 
+} Arbol;
 
 size_t altura(Arbol);
 size_t alturaI(Arbol);
 void imprimirOrden(Arbol arbol,fn_imprimir,int opcion);
-
+void imprimirArbol(Arbol arbol,fn_imprimir imprimir);
+void imprimirArbol(Arbol arbol,fn_imprimir imprimir);
+void insertarArbolO(Arbol *arbol, void *dato);
+int comparar(void *a, void *b);
 
 #endif

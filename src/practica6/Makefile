@@ -1,8 +1,8 @@
 cflags = -Wall -Werror -std=c99 -O2
 includes = -I ../iostring -I ../datastructures/nodo -I ../datastructures/lista -I ../datastructures/arbol
-libs = ../../lib -liostring -larbol
+libs = ../../lib -liostring -lArbol
 source = $(wildcard *.c) 
-output = ../../bin/taller5
+output = ../../bin/practica6
 
 build :
 	gcc $(cflags) $(source) -o $(output) $(includes) -L $(libs)
