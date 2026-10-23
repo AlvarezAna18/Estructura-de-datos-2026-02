@@ -2,68 +2,63 @@
 #include <stdlib.h>
 #include "practica6.h"
 
-
-
-int main(void)
-{
-	Arbol arbol;
+int main(void) {
+    Arbol arbol;
     arbol.raiz = NULL;
-    arbol.cant = 0;
-	arbol.comparar = comparar;
-    arbol.orden = ASC;
-	
+    
     int opcion;
+    char expresion[100];
     char ch;
-	char expresion[];
 
-//MENU---------------------------------------
-	
-	 do
-    {
-        // MENU
-        printf("\n\n Expresion :)  ");
+    do {
+        printf("\n\n Expresion :)");
         printf("\n1. Capturar expresion");
         printf("\n2. Imprimir arbol de expresion");
-        printf("\n3. Evaluar exoresion, mostrar resultado");
+        printf("\n3. Evaluar expresion, mostrar resultado");
         printf("\n4. Salir");
-
         printf("\nOpcion: ");
         scanf("%d", &opcion);
 
-        while((ch = getchar()) != '\n' && ch != EOF);
+        while ((ch = getchar()) != '\n' && ch != EOF);
 
-        switch(opcion)
+        switch (opcion) 
         {
-        case 1:
-			printf("\n captura arreglo la expresion a evaluar");
-		break;
+            case 1:
+                printf("\n ingresa expresion: ");
+                fgets(expresion, sizeof(expresion), stdin);
+                
+                arbol.raiz = crearArbolDesdeInfix(expresion);
+                printf("\nexpresion guardada y Arbol construido con exito.\n");
+                break;
 
-        case 2:
-			printf("\n Arbol de expresion:");
-			imprimirArbol(arbol,imprimir);	
-		
-        break;
-		
-        case 3:	
-			printf("\n Mostrar resultado de expresion");
-			evaluarArbol(&arbol);
-        break;
-			
-        case 4:
-		//funcion liberar
-			liberarArbol(&arbol);
-		    printf("\n\n FIN DE PROGRAMA :) ");
-		break;
-		
-        default:
-            printf("\nOpcion invalida.\n");
+            case 2:
+                if (!arbol.raiz) {
+                    printf("\n	primero debe capturar una expresion.");
+                } else {
+                    printf("\n	arbol de Expresion:\n");
+                    imprimirArbol(arbol, imprimirChar);
+                }
+                break;
+
+            case 3:
+                if (!arbol.raiz) {
+                    printf("\nprimero debe capturar una expresion.");
+                } else {
+                    capturarValores();
+                    float res = evaluarArbol(arbol.raiz);
+                    printf("\nresultado  %f\n", res);
+                }
+                break;
+
+            case 4:
+                liberarArbol(&arbol);
+                printf("\n\n baiiii \n");
+                break;
+
+            default:
+                printf("\nOpcion invalida.");
         }
+    } while (opcion != 4);
 
-    }
-    while(opcion != 4);
-	
     return 0;
 }
-
-
-
