@@ -1,199 +1,289 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <math.h>
 #include "practica6.h"
 
-char variables[50];
-float valores[50];
-int cantidad = 0;
+// arreglo infix: la expresion original 
+// arreglo postfix: la expresion acomodada
+static char expInfix[100];
+static char expPostfix[100];
 
-//saber el operando jerarquia
-int precedencia(char op) 
+// valor de cada variable
+static float valores[128];
+
+
+//jerarquia del operador
+int precedencia(char op)
 {
     if (op == '^') return 3;
     if (op == '*' || op == '/') return 2;
     if (op == '+' || op == '-') return 1;
-    return 0; // parentesis y caracteres
+    return 0; // parentesis y otros caracteres
 }
 
 //validar que sea un caracter valido
-int esNumeroOLetra(char c) 
+int esNumeroOLetra(char c)
 {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
-//infix a postfix y construir arbol
-Nodoa* crearArbolDesdeInfix(char *infix) 
+int esLetra(char c)
 {
-    char postfix[100];
-    int pos = 0;
-    cantidad = 0;
-
-    Pila pilaOps = inicializarPila(-1);
-
-    // jerarquia
-    for (int i = 0; infix[i] != '\0'; i++) {
-        char c = infix[i];
-        if (c == ' ' || c == '\n' || c == '\t') continue;
-
-        //operando directo al arreglo postfix
-        if (esNumeroOLetra(c)) {
-            postfix[pos++] = c;
-
-            // Registrar variable si es letra y no existe
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-                int existe = 0;
-                for (int j = 0; j < cantidad; j++) {
-                    if (variables[j] == c) { existe = 1; break; }
-                }
-                if (!existe) {
-                    variables[cantidad] = c;
-                    valores[cantidad] = 0;
-                    cantidad++;
-                }
-            }
-        }
-        //si es parentesis entra a pila
-        else if (c == '(') {
-            push(&pilaOps, (void*)(intptr_t)c);
-        }
-        //si es ) desapilar hasta (
-        else if (c == ')') {
-            while (!pilaVacia(pilaOps)) {
-                char op = (char)(intptr_t)pop(&pilaOps);
-                if (op == '(') break;
-                postfix[pos++] = op;
-            }
-        }
-        //si es un operador
-        else if (precedencia(c) > 0) 
-        {
-            while (!pilaVacia(pilaOps)) 
-            {
-                char top = (char)(intptr_t)peek(pilaOps);
-                //sacar de la pila si la cima es mayor o igual en precedencia
-                if (top != '(' && precedencia(top) >= precedencia(c)) {
-                    postfix[pos++] = (char)(intptr_t)pop(&pilaOps);
-                } else {
-                    break;
-                }
-            }
-            push(&pilaOps, (void*)(intptr_t)c);
-        }
-    }
-
-    //vaciar la pila 
-    while (!pilaVacia(pilaOps)) {
-        char op = (char)(intptr_t)pop(&pilaOps);
-        if (op != '(') postfix[pos++] = op;
-    }
-    postfix[pos] = '\0';
-
-
-    //construit arbol postfix
-    Pila pilaNodos = inicializarPila(-1);
-
-    for (int i = 0; postfix[i] != '\0'; i++) {
-        char c = postfix[i];
-        char *dato = malloc(sizeof(char));
-        *dato = c;
-        Nodoa *nuevo = crearNodoa(dato);
-
-        if (esNumeroOLetra(c)) {
-            push(&pilaNodos, nuevo);
-        } else {
-            nuevo->dch = (Nodoa*)pop(&pilaNodos);
-            nuevo->izq = (Nodoa*)pop(&pilaNodos);
-            push(&pilaNodos, nuevo);
-        }
-    }
-    
-    if (pilaVacia(pilaNodos)) return NULL;
-    return (Nodoa*)pop(&pilaNodos);
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-//capturar valores en variables caracteres
-void capturarValores(void) 
+int esOperador(char c)
 {
-    for (int i = 0; i < cantidad; i++) {
-        printf("Ingrese el valor para %c: ", variables[i]);
-        scanf("%f", &valores[i]);
-    }
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
 }
 
-float obtenerValor(char c) 
+void imprimirChar(void *dato)
 {
-    if (c >= '0' && c <= '9') return c - '0';
-    for (int i = 0; i < cantidad; i++) {
-        if (variables[i] == c) return valores[i];
-    }
-    return 0;
-}
-
-//evaluar arvol postordemm
-float evaluarArbol(Nodoa *raiz) 
-{
-    if (!raiz) return 0;
-
-    Pila pila = inicializarPila(-1);
-    Pila pilaPostorden = inicializarPila(-1);
-    Pila pilaValores = inicializarPila(-1);
-
-    push(&pila, raiz);
-
-    //recorrido Postorden
-    while (!pilaVacia(pila)) {
-        Nodoa *actual = (Nodoa*)pop(&pila);
-        push(&pilaPostorden, actual);
-
-        if (actual->izq) push(&pila, actual->izq);
-        if (actual->dch) push(&pila, actual->dch);
-    }
-
-    //evaluar  el operando 
-    while (!pilaVacia(pilaPostorden)) 
-    {
-        Nodoa *nodo = (Nodoa*)pop(&pilaPostorden);
-        char c = *(char*)nodo->dato;
-
-        if (esNumeroOLetra(c)) 
-        {
-            float *val = malloc(sizeof(float));
-            *val = obtenerValor(c);
-            push(&pilaValores, val);
-        } 
-        else 
-        {
-            float *der = (float*)pop(&pilaValores);
-            float *izq = (float*)pop(&pilaValores);
-            float *res = malloc(sizeof(float));
-
-            switch (c) 
-            {
-                case '+': *res = *izq + *der; break;
-                case '-': *res = *izq - *der; break;
-                case '*': *res = *izq * *der; break;
-                case '/': *res = (*der == 0) ? 0 : (*izq / *der); break;
-                case '^': *res = powf(*izq, *der); break;
-            }
-
-            free(izq);
-            free(der);
-            push(&pilaValores, res);
-        }
-    }
-
-    float *resPtr = (float*)pop(&pilaValores);
-    float resultado = *resPtr;
-    free(resPtr);
-
-    return resultado;
-}
-
-void imprimirChar(void *dato) 
-{
-    if (dato != NULL) {
+    if (dato != NULL)
         printf("%c", *(char*)dato);
+}
+
+
+//copia la expresion quitando espacios ynulo 
+static void limpiarExpresion(char *entrada)
+{
+    int i, j = 0;
+    for (i = 0; entrada[i] != '\0' && j < 99; i++)
+        if (entrada[i] != ' ' && entrada[i] != '\n' && entrada[i] != '\t')
+            expInfix[j++] = entrada[i];
+    expInfix[j] = '\0';
+}
+
+/*
+validar expresion
+ parentesis  cada '(' se mete a la pila,
+  cada ')' saca uno. Si al sacar la pila esta vacia, o al final
+  quedan '(' en la pila, los parentesis estan mal.
+*/
+int validarExpresion(char *exp)
+{
+    Pila pila = inicializarPila(-1);
+    int esperoOperando = 1;
+    char *error = NULL;
+    int i;
+
+    if (exp[0] == '\0')
+        error = "la expresion esta vacia";
+
+    for (i = 0; exp[i] != '\0' && !error; i++)
+    {
+        char c = exp[i];
+
+        if (esNumeroOLetra(c))
+        {
+            if (!esperoOperando)
+                error = "hay dos operandos seguidos sin operador";
+            esperoOperando = 0;
+        }
+        else if (c == '(')
+        {
+            if (!esperoOperando)
+                error = "falta un operador antes de '('";
+            push(&pila, &exp[i]);
+        }
+        else if (c == ')')
+        {
+            if (esperoOperando)
+                error = "un operador no tiene operando derecho (o hay parentesis vacios)";
+            else if (pilaVacia(pila))
+                error = "hay un ')' sin su '('";
+            else
+                pop(&pila);
+        }
+        else if (esOperador(c))
+        {
+            if (esperoOperando)
+                error = "un operador no tiene operando izquierdo";
+            esperoOperando = 1;
+        }
+        else
+            error = "hay un caracter no valido";
     }
+
+    if (!error && esperoOperando)
+        error = "el ultimo operador no tiene operando derecho";
+    if (!error && !pilaVacia(pila))
+        error = "hay un '(' que no se cerro";
+
+    while (!pilaVacia(pila))   // vaciar la pila
+        pop(&pila);
+
+    if (error)
+    {
+        printf("\nExpresion invalida: %s.", error);
+        return 0;
+    }
+    return 1;
+}
+
+
+/*
+ INFIX A POSTFIX 
+operando: se inserta en el arreglo postfix.
+ ( : push a la pila.
+ ) : pop de operadores al postfix hasta encontrar ( 
+operador: pop de los operadores con precedencia mayor o igual hasta encontrar uno menor, un '(' o vaciar la pila; 
+luego push del operador.
+infix se vacia la pila en el postfix.
+*/
+void infixAPostfix(char *infix, char *postfix)
+{
+    Pila pila = inicializarPila(-1);
+    int i, j = 0;
+
+    for (i = 0; infix[i] != '\0'; i++)
+    {
+        char c = infix[i];
+
+        if (esNumeroOLetra(c))//validar parentesis
+            postfix[j++] = c;
+        else if (c == '(')
+            push(&pila, &infix[i]);
+        else if (c == ')')
+        {
+            while (*(char*)peek(pila) != '(')
+                postfix[j++] = *(char*)pop(&pila);
+            pop(&pila); // saca el '('
+        }
+        else //operador
+        {
+            while (!pilaVacia(pila) && c != '^' &&
+                   precedencia(*(char*)peek(pila)) >= precedencia(c))
+                postfix[j++] = *(char*)pop(&pila);
+            push(&pila, &infix[i]);
+        }
+    }
+
+    while (!pilaVacia(pila))
+        postfix[j++] = *(char*)pop(&pila);
+    postfix[j] = '\0';
+}
+
+
+/*
+postfix a arbol
+ Se recorre el postfix y por cada caracter se crea un nodo:
+operando: push del nodo.
+
+operador: pop -> hijo derecho, pop -> hijo izquierdo, y push del nodo.
+*/
+
+Nodoa *postfixAArbol(char *postfix)
+{
+    Pila pila = inicializarPila(-1);
+    int i;
+
+    for (i = 0; postfix[i] != '\0'; i++)
+    {
+        char *dato = malloc(sizeof(char));
+        *dato = postfix[i];
+        Nodoa *nodo = crearNodoa(dato);
+
+        if (esOperador(postfix[i]))
+        {
+            nodo->dch = pop(&pila);  
+            nodo->izq = pop(&pila);
+        }
+        push(&pila, nodo);
+    }
+    return pop(&pila);
+}
+
+
+Nodoa *crearArbolDesdeInfix(char *expresion)
+{
+    limpiarExpresion(expresion);
+    if (!validarExpresion(expInfix))
+        return NULL;
+
+    infixAPostfix(expInfix, expPostfix);
+    return postfixAArbol(expPostfix);
+}
+
+
+//dar valor a las variables
+void capturarValores(void)
+{
+    int capturada[128] = {0};
+    int i;
+
+    printf("\n");
+    for (i = 0; expInfix[i] != '\0'; i++)
+    {
+        char c = expInfix[i];
+        if (esLetra(c) && !capturada[(int)c]) // se pide solo la primera vez que aparece
+        {
+            printf("%c = ", c);
+            while (scanf("%f", &valores[(int)c]) != 1)
+            {
+                while (getchar() != '\n'); 
+                printf("valor invalido, %c = ", c);
+            }
+            capturada[(int)c] = 1;
+        }
+    }
+}
+
+//crear un arreflo devar recorria arreglo de var y postfix para insertar en el arbol buscar y capturada
+
+float evaluarArbol(Nodoa *raiz)
+{
+    Pila nodos = inicializarPila(-1); //recorre el arbol
+    Pila numeros = inicializarPila(-1); //guardar resultadod
+    Nodoa *actual = raiz;
+    Nodoa *ultimo_visitado = NULL;
+
+    while (actual != NULL || !pilaVacia(nodos))
+    {
+        if (actual != NULL)
+        {
+            push(&nodos, actual);
+            actual = actual->izq;
+        }
+        else
+        {
+            Nodoa *padre = peek(nodos);
+            if (padre->dch != NULL && ultimo_visitado != padre->dch)
+                actual = padre->dch;
+            else
+            {
+   
+                char c = *(char*)padre->dato;
+                float *res = malloc(sizeof(float));
+
+                if (esOperador(c))
+                {
+                    float *der = pop(&numeros);
+                    float *izq = pop(&numeros);
+                    switch (c)
+                    {
+                        case '+': *res = *izq + *der; break;
+                        case '-': *res = *izq - *der; break;
+                        case '*': *res = *izq * *der; break;
+                        case '/': *res = (*der == 0) ? 0 : (*izq / *der); break;
+                        case '^': *res = powf(*izq, *der); break;
+                    }
+                    free(izq);
+                    free(der);
+                }
+                else if (c >= '0' && c <= '9')
+                    *res = c - '0';          
+                else
+                    *res = valores[(int)c];
+
+                push(&numeros, res);
+                ultimo_visitado = pop(&nodos);
+            }
+        }
+    }
+
+    float *final = pop(&numeros);
+    float resultado = *final;
+    free(final);
+    return resultado;
 }

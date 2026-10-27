@@ -1,18 +1,22 @@
 #ifndef PRACTICA6_H
 #define PRACTICA6_H
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+ 
 #include "arbol.h"
-
-//prototiopos
+ 
 int precedencia(char op);
 int esNumeroOLetra(char c);
-Nodoa* crearArbol(char *texto);
-void pedirValores(void);
-float obtenerValor(char c);
+int esLetra(char c);
+int esOperador(char c);
+void imprimirChar(void *dato);
+ 
+int validarExpresion(char *exp);
+void infixAPostfix(char *infix, char *postfix);
+Nodoa *postfixAArbol(char *postfix);
+Nodoa *crearArbolDesdeInfix(char *expresion);
+ 
+void capturarValores(void);
+void imprimirConValores(void);
 float evaluarArbol(Nodoa *raiz);
-void imprimirCaracter(void *dato);
-
+ 
 #endif
+ 

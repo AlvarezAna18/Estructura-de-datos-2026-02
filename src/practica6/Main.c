@@ -5,10 +5,11 @@
 int main(void) {
     Arbol arbol;
     arbol.raiz = NULL;
-    
+    arbol.cant = 0;
+
     int opcion;
     char expresion[100];
-    char ch;
+    int ch;
 
     do {
         printf("\n\n Expresion :)");
@@ -17,36 +18,46 @@ int main(void) {
         printf("\n3. Evaluar expresion, mostrar resultado");
         printf("\n4. Salir");
         printf("\nOpcion: ");
-        scanf("%d", &opcion);
+        if (scanf("%d", &opcion) != 1)
+            opcion = 0;
 
         while ((ch = getchar()) != '\n' && ch != EOF);
-
-        switch (opcion) 
+        switch (opcion)
         {
             case 1:
                 printf("\n ingresa expresion: ");
                 fgets(expresion, sizeof(expresion), stdin);
-                
+
+                liberarArbol(&arbol); 
                 arbol.raiz = crearArbolDesdeInfix(expresion);
-                printf("\nexpresion guardada y Arbol construido con exito.\n");
+                if (arbol.raiz)
+                    printf("\nexpresion guardada\n");
+                else
+                    printf("\n no se construyo\n");
                 break;
 
             case 2:
-                if (!arbol.raiz) {
+                if (!arbol.raiz) 
+				{
                     printf("\n	primero debe capturar una expresion.");
-                } else {
+                } 
+				else {
                     printf("\n	arbol de Expresion:\n");
                     imprimirArbol(arbol, imprimirChar);
                 }
                 break;
 
             case 3:
-                if (!arbol.raiz) {
+                if (!arbol.raiz) 
+				{
                     printf("\nprimero debe capturar una expresion.");
-                } else {
+                } 
+				else {
                     capturarValores();
                     float res = evaluarArbol(arbol.raiz);
-                    printf("\nresultado  %f\n", res);
+                    printf("\nResultado ");
+                    
+                    printf(" = %g\n", res);
                 }
                 break;
 
