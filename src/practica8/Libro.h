@@ -83,5 +83,5 @@ Libro* eliminarLibro(Biblioteca *b, char *isbn);
 void verTablaHash(Biblioteca *b);
 void recolectar(HashQTable *t, Libro *buscado, Arbol *arbol);
 void mostrarResultados(Arbol *arbol);
-
+void borrarDeTabla(HashQTable *t, Libro *objetivo);
 #endif

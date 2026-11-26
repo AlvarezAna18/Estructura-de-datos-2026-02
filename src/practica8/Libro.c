@@ -188,3 +188,24 @@ void mostrarResultados(Arbol *arbol)
 	arbol->raiz = NULL;
 	arbol->cant = 0;
 }
+
+void borrarDeTabla(HashQTable *t, Libro *objetivo)
+{
+	Libro *sacados[CANT_LIBROS];
+	int n = 0;
+	Libro *actual;
+
+	//saca coincidencias de esa clave hasta encontrar el libro exacto o vaciar las coincidencias
+	while ((actual = fn_deleteKey(t, objetivo)) != NULL)
+	{
+		if (actual == objetivo)
+			break; 
+		sacados[n++] = actual; //era otro libro y lo guardamos temporalmente
+	}
+
+	//reinsertar en sacados
+	for (int i = 0; i < n; i++)
+		fn_insertKey(t, sacados[i]);
+
+	remap(t);
+}

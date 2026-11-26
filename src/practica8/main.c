@@ -194,54 +194,54 @@ int main(void)
 				break;
 			}
 
+
 			case 5:
 			{
-				printf("\n1. Eliminar por ISBN\n2. Ver tabla hash");
-				if (inputEntero("\nOpcion: ", &sub) != 1) sub = -1;
-				if (sub == 1)
-				{
-					inputCadena("ISBN a eliminar: ", buscado.isbn, MAX_ISBN);
-					Libro *borrado = fn_deleteKey(&tablaISBN, &buscado);
-					if (borrado)
-					{
-						remap(&tablaISBN);
-						fn_deleteKey(&tablahash, borrado);      remap(&tablahash);
-						fn_deleteKey(&tablaAutor, borrado);     remap(&tablaAutor);
-						fn_deleteKey(&tablaFecha, borrado);     remap(&tablaFecha);
-						fn_deleteKey(&tablaIniTitulo, borrado); remap(&tablaIniTitulo);
-						fn_deleteKey(&tablaIniAutor, borrado);  remap(&tablaIniAutor);
+					printf("\n1. Eliminar por ISBN\n2. Ver tabla hash");
+					if (inputEntero("\nOpcion: ", &sub) != 1) sub = -1;
+					if (sub == 1)
+						{
+							inputCadena("ISBN a eliminar: ", buscado.isbn, MAX_ISBN);
+							Libro *objetivo = fn_searchKey(&tablaISBN, &buscado);
+							if (objetivo)
+								{
+									borrarDeTabla(&tablaISBN, objetivo);
+									borrarDeTabla(&tablahash, objetivo);
+									borrarDeTabla(&tablaAutor, objetivo);
+									borrarDeTabla(&tablaFecha, objetivo);
+									borrarDeTabla(&tablaIniTitulo, objetivo);
+									borrarDeTabla(&tablaIniAutor, objetivo);
 
-						printf("\nLIBRO ELIMINADO:\n");
-						imprimirLibro(borrado);
-						printf("\n");
-					}
-					else printf("\nNo existe ese ISBN\n");
+									printf("\nLIBRO ELIMINADO DE TODAS LAS TABLAS:\n");
+									imprimirLibro(objetivo);
+									printf("\n");
+								}
+							else printf("\nNo existe ese ISBN\n");
+							}
+							else if (sub == 2)
+							{
+								printf("\nTABLA ISBN");
+								for(int i = 0; i < tablaISBN.len ; i++)
+								{
+									printf("\n[%d] ",i);
+									if(tablaISBN.table[i]!=NULL && tablaISBN.table[i]!=&tablaISBN)
+										imprimirLibro(tablaISBN.table[i]);
+								}
+								printf("\n");
+							}
+							else printf("\nOpcion invalida\n");
+							break;
 				}
-				else if (sub == 2)
-				{
-					printf("\nTABLA ISBN");
-					for(int i = 0; i < tablaISBN.len ; i++)
-					{
-						printf("\n[%d] ",i);
-						if(tablaISBN.table[i]!=NULL && tablaISBN.table[i]!=&tablaISBN)
-							imprimirLibro(tablaISBN.table[i]);
-					}
-					printf("\n");
-				}
-				else printf("\nOpcion invalida\n");
-				break;
+				case 6:
+					break;
+
+				default:
+					printf("\nOpcion invalida\n");
 			}
+		} while (opcion != 6);
 
-			case 6:
-				break;
-
-			default:
-				printf("\nOpcion invalida\n");
-		}
-	} while (opcion != 6);
-
-	printf("\n\n FIN DE PROGRAMA\n");
-	return 0;
+		printf("\n\n FIN DE PROGRAMA\n");
+		return 0;
 }
 
 int folding(void *data)

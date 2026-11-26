@@ -32,5 +32,6 @@ void imprimirArbol(Arbol arbol,fn_imprimir imprimir);
 void imprimirArbol(Arbol arbol,fn_imprimir imprimir);
 void insertarArbolO(Arbol *arbol, void *dato);
 int comparar(void *a, void *b);
+void liberarArbol(Arbol *arbol);
 
 #endif

@@ -329,3 +329,45 @@ int comparar(void *a, void *b)
     return valA - valB;
 }
 	
+	
+//liberar arbol
+void liberarArbol(Arbol *arbol)
+{
+    if (arbol == NULL || arbol->raiz == NULL)
+        return;
+
+    Pila pila = inicializarPila(-1);
+    Nodoa *actual = arbol->raiz;
+    Nodoa *ultimo_visitado = NULL;
+
+    while (actual != NULL || !pilaVacia(pila))
+    {
+        if (actual != NULL)
+        {
+            push(&pila, actual);
+            actual = actual->izq;
+        }
+        else
+        {
+            Nodoa *padre = peek(pila);			
+            if (padre->dch != NULL && ultimo_visitado != padre->dch)
+            {
+                actual = padre->dch;
+            }
+            else
+            {
+                ultimo_visitado = pop(&pila);
+                
+                //liberar en postorden hijo y luego raiz
+				//libera el entero 
+                free(ultimo_visitado->dato);
+				
+				//libera nodo
+                free(ultimo_visitado);       
+            }
+        }
+    }
+
+    arbol->raiz = NULL;
+    arbol->cant = 0;
+}

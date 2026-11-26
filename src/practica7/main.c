@@ -115,22 +115,33 @@ int main(void)
 				//se solicita la selccion del archivo 
 				//el archivo de mayor prioridad en la cola de impresión (heap)
 				//print f imprimiendo... 
-				if (heap.cant == 0)//validar si no hay nada en el arreglo
+				if (heap.cant == 0)
 				{
-					printf("\n	la cola esta vacia.\n");
+					printf("\n	La cola esta vacia.\n");
 				}
-				else
+				else if (heap.cant == 1) // Validación para el último nodo
 				{
-					// Remueve la raiz la mayor prioridad 
+					int *documentoProcesado = (int*)heap.datos[0];
+					if (documentoProcesado != NULL)
+					{
+						printf("\n	Imprimiendo archivo con mayor prioridad %d paginas...\n", *documentoProcesado);
+						free(documentoProcesado);
+					}
+					//limpiar arreglo
+					free(heap.datos);
+					heap.datos = NULL;
+					heap.cant = 0;
+				}
+				else // Cuando hay mas de 2
+				{
 					int *documentoProcesado = (int*)removerHeap(&heap);
 					if (documentoProcesado != NULL)
 					{
-						printf("\n	Imprimiendo archivo con mayor prioridad %d paginas...  \n", *documentoProcesado);
-						//liberar el nodo sacado
+						printf("\n	Imprimiendo archivo con mayor prioridad %d paginas...\n", *documentoProcesado);
 						free(documentoProcesado);
 					}
-				}
-				break;
+		}
+		break;
 			}
 		case 4:
 			{
